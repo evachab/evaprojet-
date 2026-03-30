@@ -451,16 +451,16 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Société</label>
-                                <input class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg" type="text" placeholder="Nom de l'entreprise" required>
+                                <input id="societe" class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg" type="text" placeholder="Nom de l'entreprise" required>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Email Pro</label>
-                                <input class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg" type="email" placeholder="contact@domaine.com" required>
+                                <input id="email" class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg" type="email" placeholder="contact@domaine.com" required>
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Sujet du projet</label>
-                            <select class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg text-brand-dark cursor-pointer">
+                            <select id="sujet" class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg text-brand-dark cursor-pointer">
                                 <option>Devenir sponsor (fourniture de matériaux)</option>
                                 <option>Commande d'instruments sur-mesure</option>
                                 <option>Invitation au Salon TCSI</option>
@@ -469,9 +469,9 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Votre message</label>
-                            <textarea class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg h-32 resize-none" placeholder="Décrivez brièvement vos attentes..." required></textarea>
+                            <textarea id="message" class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg h-32 resize-none" placeholder="Décrivez brièvement vos attentes..." required></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-brand-dark hover:bg-brand-primary text-white font-medium py-4 rounded-xl transition shadow-lg mt-4 flex justify-center items-center gap-2">
+                        <button id="submitBtn" type="submit" class="w-full bg-brand-dark hover:bg-brand-primary text-white font-medium py-4 rounded-xl transition shadow-lg mt-4 flex justify-center items-center gap-2">
                             Envoyer la demande <i class="fas fa-arrow-right text-sm"></i>
                         </button>
                     </form>
@@ -544,393 +544,49 @@
             });
         });
 
-        // 4. Gestion du formulaire B2B
-        function submitForm(event) {
+        // 4. Gestion du formulaire B2B avec API Vercel & Telegram
+        async function submitForm(event) {
             event.preventDefault();
-            alert("Excellente initiative ! Votre demande B2B a bien été transmise au cabinet Upcycling Music. Nous vous contacterons sous 48h.");
-            event.target.reset();
-        }
-    </script>
-</body>
-</html>        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .hero-bg {
-            /* 📸 MODIFIER L'IMAGE DE FOND ICI : Remplacez l'URL par votre image d'ambiance industrielle/musicale */
-            background-image: linear-gradient(rgba(31, 41, 55, 0.8), rgba(31, 41, 55, 0.8)), url('https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=2000&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-        }
-    </style>
-</head>
-<body class="bg-brand-light text-gray-800 font-sans antialiased">
+            const form = event.target;
+            const button = document.getElementById('submitBtn');
+            const originalText = button.innerHTML;
+            
+            // 1. Récupération des données
+            const data = {
+                societe: document.getElementById('societe').value,
+                email: document.getElementById('email').value,
+                sujet: document.getElementById('sujet').value,
+                message: document.getElementById('message').value
+            };
 
-    <!-- POP-UP SALON TCSI -->
-    <div id="promo-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 fade-in">
-        <div class="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full mx-4 text-center relative border-t-4 border-brand-green">
-            <button onclick="closePopup()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-800 transition">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-brand-green text-4xl mb-4"><i class="fas fa-rocket"></i></div>
-            <h2 class="text-2xl font-bold mb-2 text-brand-dark">Rencontrons-nous au Salon TCSI !</h2>
-            <p class="text-gray-600 mb-6">L'équipe d'Upcycling Music sera présente le <strong class="text-brand-dark">16 juin 2026</strong> pour vous présenter notre premier instrument éco-conçu et échanger sur vos futurs projets B2B.</p>
-            <button onclick="closePopup()" class="w-full bg-brand-green hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded transition shadow-lg">
-                J'y serai ! (Fermer)
-            </button>
-        </div>
-    </div>
+            // 2. État de chargement (UX)
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+            button.classList.replace('bg-brand-dark', 'bg-brand-muted');
 
-    <!-- NAVIGATION -->
-    <nav class="fixed w-full z-40 bg-white shadow-md transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <div class="flex items-center">
-                    <a href="#" class="text-2xl font-bold text-brand-dark flex items-center gap-2">
-                        <i class="fas fa-recycle text-brand-green"></i>
-                        Upcycling Music
-                    </a>
-                </div>
-                <!-- Menu Desktop -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#accueil" class="text-gray-600 hover:text-brand-green font-semibold transition">Accueil</a>
-                    <a href="#equipe" class="text-gray-600 hover:text-brand-green font-semibold transition">L'Équipe</a>
-                    <a href="#produit" class="text-gray-600 hover:text-brand-green font-semibold transition">Notre Produit</a>
-                    <a href="#sponsor" class="text-gray-600 hover:text-brand-green font-semibold transition">Flexof</a>
-                    <a href="#contact" class="bg-brand-dark hover:bg-gray-800 text-white px-5 py-2 rounded font-semibold transition">Contact</a>
-                </div>
-                <!-- Bouton Menu Mobile -->
-                <div class="flex items-center md:hidden">
-                    <button onclick="toggleMobileMenu()" class="text-brand-dark hover:text-brand-green focus:outline-none">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Menu Mobile (Caché par défaut) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 pb-4 px-4 shadow-inner">
-            <a href="#accueil" class="block py-3 text-gray-600 font-semibold" onclick="toggleMobileMenu()">Accueil</a>
-            <a href="#equipe" class="block py-3 text-gray-600 font-semibold" onclick="toggleMobileMenu()">L'Équipe</a>
-            <a href="#produit" class="block py-3 text-gray-600 font-semibold" onclick="toggleMobileMenu()">Notre Produit</a>
-            <a href="#sponsor" class="block py-3 text-gray-600 font-semibold" onclick="toggleMobileMenu()">Flexof</a>
-            <a href="#contact" class="block py-3 text-brand-green font-semibold" onclick="toggleMobileMenu()">Contact</a>
-        </div>
-    </nav>
+            // 3. Appel de notre backend Vercel
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-    <!-- SECTION 1 : ACCUEIL / HERO -->
-    <section id="accueil" class="hero-bg h-screen flex items-center justify-center pt-20">
-        <div class="text-center px-4 max-w-4xl mx-auto">
-            <span class="text-brand-green font-bold tracking-widest uppercase mb-4 block">Cabinet de Conseil & Start-up à impact</span>
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Donnez une nouvelle résonance à votre industrie.
-            </h1>
-            <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-                Nous transformons les déchets industriels de nos clients en instruments de musique uniques pour valoriser votre démarche RSE et votre image de marque.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="#produit" class="bg-brand-green hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded shadow-lg transition text-lg">
-                    Découvrir notre produit
-                </a>
-                <a href="#sponsor" class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-brand-dark font-bold py-3 px-8 rounded shadow-lg transition text-lg">
-                    Voir notre étude de cas
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION CONCEPT (Les 3 piliers) -->
-    <section class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-brand-dark">Notre Mission : La communication par la matière</h2>
-                <div class="w-20 h-1 bg-brand-green mx-auto mt-4"></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <div class="text-center p-6 rounded-lg bg-gray-50 shadow hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-brand-green text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg"><i class="fas fa-recycle"></i></div>
-                    <h3 class="text-xl font-bold mb-3 text-brand-dark">Économie Circulaire</h3>
-                    <p class="text-gray-600">Zéro déchet, 100% de valorisation. Nous récupérons vos rebuts de production pour leur donner une seconde vie utile et artistique.</p>
-                </div>
-                <div class="text-center p-6 rounded-lg bg-gray-50 shadow hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-brand-dark text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg"><i class="fas fa-wave-square"></i></div>
-                    <h3 class="text-xl font-bold mb-3 text-brand-dark">Innovation Acoustique</h3>
-                    <p class="text-gray-600">Au-delà de l'objet, nous appliquons nos connaissances techniques pour créer des instruments avec une véritable identité sonore.</p>
-                </div>
-                <div class="text-center p-6 rounded-lg bg-gray-50 shadow hover:shadow-md transition">
-                    <div class="w-16 h-16 bg-brand-green text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg"><i class="fas fa-bullhorn"></i></div>
-                    <h3 class="text-xl font-bold mb-3 text-brand-dark">Image de Marque</h3>
-                    <p class="text-gray-600">Transformez votre engagement RSE en un outil de communication puissant, physique et original pour vos partenaires.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION 2 : L'ÉQUIPE -->
-    <section id="equipe" class="py-20 bg-brand-light">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-brand-dark">L'alliance entre commerce et industrie</h2>
-                <div class="w-20 h-1 bg-brand-green mx-auto mt-4 mb-6"></div>
-                <p class="max-w-3xl mx-auto text-gray-600 text-lg">
-                    Étudiants en première année de <strong>BUT TCSI</strong> (Techniques de Commercialisation des Systèmes Industriels) à Lyon, nous avons fondé Upcycling Music. Notre synergie d'équipe nous permet de gérer l'intégralité d'un projet : de la conception mécanique des pièces à la stratégie marketing finale.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Membre 1 -->
-                <div class="bg-white rounded-lg overflow-hidden shadow-lg text-center hover:-translate-y-2 transition duration-300">
-                    <!-- 📸 MODIFIER L'IMAGE ICI : Photo de Eva -->
-                    <img src="https://placehold.co/400x400/10b981/ffffff?text=Photo+Eva" alt="Eva" class="w-full h-64 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-brand-dark">Eva</h3>
-                        <p class="text-brand-green font-semibold mb-3">Co-fondatrice</p>
-                    </div>
-                </div>
-                <!-- Membre 2 -->
-                <div class="bg-white rounded-lg overflow-hidden shadow-lg text-center hover:-translate-y-2 transition duration-300">
-                    <!-- 📸 MODIFIER L'IMAGE ICI : Photo de Raphaël -->
-                    <img src="https://placehold.co/400x400/1f2937/ffffff?text=Photo+Raphael" alt="Raphaël" class="w-full h-64 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-brand-dark">Raphaël</h3>
-                        <p class="text-brand-green font-semibold mb-3">Co-fondateur</p>
-                    </div>
-                </div>
-                <!-- Membre 3 -->
-                <div class="bg-white rounded-lg overflow-hidden shadow-lg text-center hover:-translate-y-2 transition duration-300">
-                    <!-- 📸 MODIFIER L'IMAGE ICI : Photo de Lamia -->
-                    <img src="https://placehold.co/400x400/10b981/ffffff?text=Photo+Lamia" alt="Lamia" class="w-full h-64 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-brand-dark">Lamia</h3>
-                        <p class="text-brand-green font-semibold mb-3">Co-fondatrice</p>
-                    </div>
-                </div>
-                <!-- Membre 4 -->
-                <div class="bg-white rounded-lg overflow-hidden shadow-lg text-center hover:-translate-y-2 transition duration-300">
-                    <!-- 📸 MODIFIER L'IMAGE ICI : Photo de Kayna -->
-                    <img src="https://placehold.co/400x400/1f2937/ffffff?text=Photo+Kayna" alt="Kayna" class="w-full h-64 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-brand-dark">Kayna</h3>
-                        <p class="text-brand-green font-semibold mb-3">Co-fondatrice</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION 3 : LE PRODUIT (E-commerce) -->
-    <section id="produit" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <!-- Colonne Image Produit -->
-                <div class="relative rounded-lg overflow-hidden shadow-2xl">
-                    <!-- 📸 MODIFIER L'IMAGE ICI : Mettez la photo de votre prototype ou les plans SolidWorks -->
-                    <img src="https://placehold.co/800x600/e2e8f0/475569?text=Prototype+de+l'instrument+(Photo/Plan)" alt="Prototype Instrument" class="w-full h-auto object-cover">
-                    <div class="absolute top-4 left-4 bg-brand-green text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                        Série Limitée
-                    </div>
-                </div>
-                
-                <!-- Colonne Info Produit -->
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Notre première création</h2>
-                    <p class="text-gray-500 mb-6 italic">Issu des rebuts industriels, pensé pour l'acoustique.</p>
-                    
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Cet instrument n'est pas seulement un objet musical, c'est une vitrine du savoir-faire industriel local. Conçu de A à Z par notre équipe, il offre une sonorité unique grâce à la densité spécifique des matériaux recyclés utilisés.
-                    </p>
-
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-brand-green mt-1 mr-3"></i>
-                            <span class="text-gray-700"><strong>Matériaux :</strong> Chutes de production revalorisées (Aluminium, Bois, Polymères).</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-brand-green mt-1 mr-3"></i>
-                            <span class="text-gray-700"><strong>Acoustique :</strong> Étudiée via des logiciels CAO pour une résonance optimale.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-brand-green mt-1 mr-3"></i>
-                            <span class="text-gray-700"><strong>Design :</strong> Brut, moderne et porteur de sens pour votre entreprise.</span>
-                        </li>
-                    </ul>
-
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div>
-                            <span class="text-sm text-gray-500 block">Prix indicatif prototype</span>
-                            <span class="text-4xl font-bold text-brand-dark">250 €</span>
-                        </div>
-                        <div class="flex flex-col gap-2 w-full sm:w-auto">
-                            <button onclick="alert('Fonctionnalité d\'ajout au panier en développement !')" class="bg-brand-dark hover:bg-gray-800 text-white font-bold py-3 px-6 rounded transition shadow w-full text-center">
-                                <i class="fas fa-shopping-cart mr-2"></i> Ajouter au panier
-                            </button>
-                            <a href="#contact" class="bg-brand-light hover:bg-gray-200 border border-gray-300 text-brand-dark font-bold py-3 px-6 rounded transition shadow w-full text-center">
-                                Demander un devis
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION 4 : LE SPONSOR (FLEXOF) -->
-    <section id="sponsor" class="py-20 bg-brand-dark text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="text-brand-green font-bold tracking-widest uppercase mb-2 block">Partenaire Officiel</span>
-                <h2 class="text-3xl md:text-5xl font-bold mb-4">Une collaboration qui fait du bruit : Flexof</h2>
-                <div class="w-20 h-1 bg-brand-green mx-auto mt-4"></div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <!-- 📸 MODIFIER L'IMAGE ICI : Remplacez par le vrai logo de Flexof (fond transparent de préférence) -->
-                    <div class="bg-white p-6 rounded-lg inline-block mb-6 w-full text-center">
-                        <img src="https://placehold.co/400x150/ffffff/1f2937?text=LOGO+FLEXOF" alt="Logo Flexof" class="h-20 object-contain mx-auto">
-                    </div>
-                    
-                    <p class="text-gray-300 mb-6 text-lg leading-relaxed">
-                        L'aventure Upcycling Music n'aurait pas pu voir le jour sans la confiance de notre premier grand partenaire : <strong class="text-white">Flexof</strong>. Basée à Francheville (Lyon), cette entreprise nous a ouvert ses portes et fourni la matière première essentielle à notre prototype.
-                    </p>
-                    <p class="text-gray-300 mb-8 leading-relaxed">
-                        En nous confiant ses matériaux industriels, Flexof prouve son engagement concret envers l'économie circulaire et son soutien à l'innovation étudiante. Leurs matériaux de haute qualité nous ont permis de repousser les limites de la conception acoustique.
-                    </p>
-                    
-                    <a href="https://www.google.com/search?q=Flexof+Francheville" target="_blank" class="inline-flex items-center text-brand-green hover:text-white font-bold transition">
-                        Visiter le site de Flexof <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div>
-
-                <!-- Espace Vidéo Promotionnelle -->
-                <div class="bg-gray-800 p-2 rounded-xl shadow-2xl relative aspect-video flex items-center justify-center">
-                    <!-- 📸 MODIFIER LA VIDÉO ICI : Remplacez cette image par une balise <iframe> YouTube quand votre vidéo sera prête -->
-                    <img src="https://placehold.co/800x450/374151/9ca3af?text=Espace+pour+votre+Vidéo+Projet" alt="Vidéo Projet" class="rounded-lg w-full h-full object-cover opacity-50">
-                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                        <i class="fab fa-youtube text-5xl text-gray-400 mb-4"></i>
-                        <p class="text-gray-300 font-semibold">Plongez dans les coulisses de la création dans les ateliers de Flexof.</p>
-                        <span class="text-sm text-brand-green mt-2">(Vidéo en cours de réalisation)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION 5 : COMMUNICATION & CONTACT -->
-    <section id="contact" class="py-20 bg-brand-light">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-dark mb-4">Prêts à faire résonner votre marque ?</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto text-lg">Devenez notre prochain sponsor industriel ou commandez votre propre instrument sur-mesure pour votre communication d'entreprise.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                
-                <!-- Infos Contact -->
-                <div class="lg:col-span-1 space-y-8">
-                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-brand-accentDark transition duration-300">
-                        <div class="w-14 h-14 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white rounded-xl flex items-center justify-center text-2xl mb-6 shadow-md"><i class="fab fa-instagram"></i></div>
-                        <h3 class="text-xl font-serif font-bold text-brand-dark mb-2">Les coulisses du projet</h3>
-                        <p class="text-gray-600 mb-4 text-sm leading-relaxed">Suivez la création de nos instruments, de nos plans CAO SolidWorks jusqu'à l'atelier d'assemblage.</p>
-                        <a href="https://instagram.com/music.upcycling" target="_blank" class="text-brand-accentDark font-bold hover:text-pink-600 transition flex items-center">@music.upcycling <i class="fas fa-external-link-alt ml-2 text-xs"></i></a>
-                    </div>
-
-                    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-brand-accentDark transition duration-300">
-                        <div class="w-14 h-14 bg-brand-dark text-brand-accent rounded-xl flex items-center justify-center text-2xl mb-6 shadow-md"><i class="fas fa-envelope-open-text"></i></div>
-                        <h3 class="text-xl font-serif font-bold text-brand-dark mb-2">Contact Direct</h3>
-                        <p class="text-gray-600 mb-4 text-sm leading-relaxed">Pour toute demande de devis sur-mesure, de partenariat local ou d'informations techniques.</p>
-                        <a href="mailto:upcyclingmusic@gmail.com" class="text-brand-accentDark font-bold hover:text-brand-dark transition break-all">upcyclingmusic@gmail.com</a>
-                    </div>
-                </div>
-
-                <!-- Formulaire -->
-                <div class="lg:col-span-2 bg-white p-8 md:p-10 rounded-xl shadow-lg border border-gray-100">
-                    <form onsubmit="submitForm(event)">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div>
-                                <label class="block text-brand-dark text-sm font-bold mb-2 uppercase tracking-wide" for="nom">Nom de l'entreprise *</label>
-                                <input class="bg-brand-light appearance-none border border-transparent rounded-lg w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-brand-accentDark focus:ring-2 focus:ring-brand-accent transition" id="nom" type="text" placeholder="Ex: Flexof" required>
-                            </div>
-                            <div>
-                                <label class="block text-brand-dark text-sm font-bold mb-2 uppercase tracking-wide" for="email">Email professionnel *</label>
-                                <input class="bg-brand-light appearance-none border border-transparent rounded-lg w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-brand-accentDark focus:ring-2 focus:ring-brand-accent transition" id="email" type="email" placeholder="contact@entreprise.com" required>
-                            </div>
-                        </div>
-                        <div class="mb-6">
-                            <label class="block text-brand-dark text-sm font-bold mb-2 uppercase tracking-wide" for="materiaux">Type de matériaux à recycler</label>
-                            <input class="bg-brand-light appearance-none border border-transparent rounded-lg w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-brand-accentDark focus:ring-2 focus:ring-brand-accent transition" id="materiaux" type="text" placeholder="Ex: Chutes d'aluminium, plastique injecté...">
-                        </div>
-                        <div class="mb-8">
-                            <label class="block text-brand-dark text-sm font-bold mb-2 uppercase tracking-wide" for="message">Votre message *</label>
-                            <textarea class="bg-brand-light appearance-none border border-transparent rounded-lg w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-brand-accentDark focus:ring-2 focus:ring-brand-accent transition h-32 resize-none" id="message" placeholder="Parlez-nous de vos besoins en communication..." required></textarea>
-                        </div>
-                        <button type="submit" class="w-full bg-brand-accentDark hover:bg-pink-500 text-white font-bold py-4 px-4 rounded-lg transition shadow-md hover:shadow-xl text-lg flex items-center justify-center gap-3">
-                            <i class="fas fa-paper-plane"></i> Envoyer la demande
-                        </button>
-                    </form>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="bg-gray-900 text-white pt-16 pb-8 border-t-4 border-brand-accentDark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 text-center md:text-left">
-                <div>
-                    <a href="#" class="text-2xl font-serif font-bold text-white flex items-center justify-center md:justify-start gap-2 mb-4">
-                        <i class="fas fa-recycle text-brand-accent"></i>
-                        Upcycling Music
-                    </a>
-                    <p class="text-gray-400 text-sm leading-relaxed">Start-up à impact créée par 4 étudiants du BUT TCSI de Lyon. La communication d'entreprise réinventée par l'upcycling et l'art musical.</p>
-                </div>
-                <div>
-                    <h4 class="text-lg font-serif font-bold mb-6 text-brand-accent">Liens rapides</h4>
-                    <ul class="space-y-3 text-gray-400">
-                        <li><a href="#accueil" class="hover:text-white transition flex items-center justify-center md:justify-start"><i class="fas fa-angle-right text-brand-accentDark mr-2"></i> Concept</a></li>
-                        <li><a href="#produit" class="hover:text-white transition flex items-center justify-center md:justify-start"><i class="fas fa-angle-right text-brand-accentDark mr-2"></i> Notre Instrument</a></li>
-                        <li><a href="#sponsor" class="hover:text-white transition flex items-center justify-center md:justify-start"><i class="fas fa-angle-right text-brand-accentDark mr-2"></i> Partenaire Flexof</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-serif font-bold mb-6 text-brand-accent">Projet étudiant soutenu par</h4>
-                    <!-- 📸 MODIFIER L'IMAGE ICI : Logo Flexof Footer -->
-                    <div class="bg-white p-3 rounded-xl inline-block shadow-lg">
-                        <img src="https://placehold.co/200x80/ffffff/1f2937?text=FLEXOF" alt="Flexof Sponsor" class="h-10">
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-                <p>&copy; 2026 Upcycling Music. Tous droits réservés.</p>
-                <div class="flex gap-6 mt-4 md:mt-0">
-                    <a href="https://instagram.com/music.upcycling" class="text-gray-400 hover:text-brand-accent transition text-2xl"><i class="fab fa-instagram"></i></a>
-                    <a href="mailto:upcyclingmusic@gmail.com" class="text-gray-400 hover:text-brand-accent transition text-2xl"><i class="fas fa-envelope"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- JAVASCRIPT POUR L'INTERACTIVITÉ -->
-    <script>
-        // Gestion du Menu Mobile
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-            } else {
-                menu.classList.add('hidden');
+                if (response.ok) {
+                    alert("Excellente initiative ! Votre demande B2B a bien été transmise à notre équipe. Nous vous contacterons sous 48h.");
+                    form.reset();
+                } else {
+                    alert("Oups ! Une erreur est survenue lors de l'envoi. Veuillez nous écrire directement à upcyclingmusic@gmail.com.");
+                }
+            } catch (error) {
+                alert("Erreur de connexion. Vérifiez votre réseau et réessayez.");
+                console.error('Erreur:', error);
+            } finally {
+                // 4. Restauration du bouton
+                button.disabled = false;
+                button.innerHTML = originalText;
+                button.classList.replace('bg-brand-muted', 'bg-brand-dark');
             }
-        }
-
-        // Gestion du Pop-up (Fermeture)
-        function closePopup() {
-            const popup = document.getElementById('promo-popup');
-            popup.style.display = 'none';
-        }
-
-        // Gestion factice du formulaire pour la démonstration
-        function submitForm(event) {
-            event.preventDefault(); // Empêche le rechargement de la page
-            alert("Merci ! Votre demande a été envoyée à l'équipe Upcycling Music. Nous vous répondrons très vite à upcyclingmusic@gmail.com.");
-            event.target.reset(); // Vide le formulaire
         }
     </script>
 </body>
