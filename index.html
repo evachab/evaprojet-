@@ -3,38 +3,556 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upcycling Music | Cabinet de conseil & Création d'instruments</title>
+    <title>Upcycling Music | Cabinet d'Ingénierie & Design Sonore</title>
     
     <!-- Intégration de Tailwind CSS pour le design -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Configuration des couleurs personnalisées (Industrie + Écologie) -->
+    <!-- Configuration de la nouvelle DA : Rose Clair Premium -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         brand: {
-                            dark: '#1f2937', // Gris industriel
-                            green: '#10b981', // Vert écolo
-                            light: '#f3f4f6'  // Fond clair
+                            dark: '#1c1917',     // Noir doux / Anthracite (Texte principal)
+                            muted: '#78716c',    // Gris chaud (Textes secondaires)
+                            primary: '#e11d48',  // Rose vif (Boutons, accents importants)
+                            soft: '#fda4af',     // Rose moyen (Détails)
+                            light: '#fff1f2',    // Rose très clair (Fonds de section)
+                            base: '#ffffff'      // Blanc pur
                         }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
                     }
                 }
             }
         }
     </script>
 
-    <!-- Intégration de FontAwesome pour les icônes -->
+    <!-- Intégration de FontAwesome et des Polices Google -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
     <style>
-        /* Styles personnalisés pour des animations douces */
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Hero Background avec overlay rosé élégant */
+        .hero-bg {
+            /* 📸 MODIFIER L'IMAGE DE FOND ICI */
+            background-image: linear-gradient(to right, rgba(28, 25, 23, 0.8), rgba(28, 25, 23, 0.4)), url('https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Effet parallaxe */
+        }
+
+        /* Styles pour le ScrollSpy de la Sidebar */
+        .nav-link.active {
+            color: #e11d48;
+            font-weight: 600;
+            background-color: #fff1f2;
+            border-right: 4px solid #e11d48;
+        }
+        
+        /* Cacher la scrollbar pour la sidebar tout en gardant le scroll */
+        .sidebar-scroll::-webkit-scrollbar { display: none; }
+        .sidebar-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-brand-base text-brand-dark font-sans antialiased flex flex-col lg:flex-row min-h-screen">
+
+    <!-- POP-UP SALON TCSI (Design épuré) -->
+    <div id="promo-popup" class="fixed inset-0 z-[100] flex items-center justify-center bg-brand-dark bg-opacity-60 backdrop-blur-sm hidden">
+        <div class="bg-white p-10 rounded-2xl shadow-2xl max-w-lg w-full mx-4 relative border border-brand-light">
+            <button onclick="closePopup()" class="absolute top-5 right-5 text-brand-muted hover:text-brand-primary transition">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <div class="inline-block bg-brand-light text-brand-primary p-4 rounded-full mb-6">
+                <i class="fas fa-calendar-alt text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-serif font-bold mb-3 text-brand-dark">Rencontrons-nous !</h2>
+            <p class="text-brand-muted mb-8 leading-relaxed">
+                L'équipe d'Upcycling Music sera présente au Salon TCSI le <strong class="text-brand-dark">16 juin 2026</strong>. Venez tester notre prototype acoustique et concevoir votre future campagne RSE.
+            </p>
+            <button onclick="closePopup()" class="w-full bg-brand-primary hover:bg-rose-700 text-white font-medium py-4 px-6 rounded-xl transition shadow-lg hover:shadow-xl">
+                J'ajoute à mon agenda
+            </button>
+        </div>
+    </div>
+
+    <!-- EN-TÊTE MOBILE (Visible uniquement sur petits écrans) -->
+    <header class="lg:hidden fixed top-0 w-full h-20 bg-white/90 backdrop-blur-md border-b border-brand-light z-40 flex items-center justify-between px-6">
+        <a href="#accueil" class="text-xl font-serif font-bold text-brand-dark flex items-center gap-2">
+            <i class="fas fa-recycle text-brand-primary"></i>
+            Upcycling Music
+        </a>
+        <button onclick="toggleSidebar()" class="text-brand-dark hover:text-brand-primary focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </header>
+
+    <!-- SIDEBAR / BARRE LATÉRALE (Intelligente) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-white border-r border-brand-light z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        
+        <!-- En-tête Sidebar (Logo + Fermeture mobile) -->
+        <div class="h-24 flex items-center justify-between px-8 border-b border-brand-light">
+            <a href="#accueil" class="text-2xl font-serif font-bold text-brand-dark flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-light rounded-lg flex items-center justify-center">
+                    <i class="fas fa-recycle text-brand-primary"></i>
+                </div>
+                <span>U.M.</span>
+            </a>
+            <button onclick="toggleSidebar()" class="lg:hidden text-brand-muted hover:text-brand-primary">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Navigation principale -->
+        <nav class="flex-1 py-8 sidebar-scroll overflow-y-auto">
+            <ul class="space-y-2">
+                <li>
+                    <a href="#accueil" class="nav-link block py-4 px-8 text-brand-muted hover:text-brand-primary hover:bg-brand-light transition flex items-center gap-4">
+                        <i class="fas fa-home w-5"></i> <span>Le Concept</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#expertise" class="nav-link block py-4 px-8 text-brand-muted hover:text-brand-primary hover:bg-brand-light transition flex items-center gap-4">
+                        <i class="fas fa-lightbulb w-5"></i> <span>Notre Expertise</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#produit" class="nav-link block py-4 px-8 text-brand-muted hover:text-brand-primary hover:bg-brand-light transition flex items-center gap-4">
+                        <i class="fas fa-guitar w-5"></i> <span>Prototype & Boutique</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#sponsor" class="nav-link block py-4 px-8 text-brand-muted hover:text-brand-primary hover:bg-brand-light transition flex items-center gap-4">
+                        <i class="fas fa-handshake w-5"></i> <span>Étude de cas : Flexof</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#equipe" class="nav-link block py-4 px-8 text-brand-muted hover:text-brand-primary hover:bg-brand-light transition flex items-center gap-4">
+                        <i class="fas fa-users w-5"></i> <span>Le Cabinet (TCSI)</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Bas de Sidebar (Contact & Réseaux) -->
+        <div class="p-8 border-t border-brand-light bg-brand-base">
+            <a href="#contact" class="w-full block text-center bg-brand-dark hover:bg-brand-primary text-white font-medium py-3 rounded-xl transition shadow-md mb-6">
+                Démarrer un projet
+            </a>
+            <div class="flex justify-center gap-6">
+                <a href="https://instagram.com/music.upcycling" target="_blank" class="text-brand-muted hover:text-brand-primary transition text-xl"><i class="fab fa-instagram"></i></a>
+                <a href="mailto:upcyclingmusic@gmail.com" class="text-brand-muted hover:text-brand-primary transition text-xl"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p class="text-center text-xs text-brand-muted mt-6">© 2026 Upcycling Music.</p>
+        </div>
+    </aside>
+
+    <!-- OVERLAY MOBILE (Pour fermer la sidebar en cliquant à côté) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-brand-dark bg-opacity-50 z-40 hidden lg:hidden backdrop-blur-sm"></div>
+
+    <!-- CONTENU PRINCIPAL (Décalé à droite sur desktop) -->
+    <main class="flex-1 lg:ml-72 pt-20 lg:pt-0 w-full">
+
+        <!-- SECTION 1 : ACCUEIL / HERO -->
+        <section id="accueil" class="hero-bg min-h-screen flex items-center relative overflow-hidden">
+            <div class="px-8 md:px-16 lg:px-24 max-w-5xl relative z-10 fade-in">
+                <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 text-brand-light px-5 py-2 rounded-full mb-8">
+                    <span class="w-2 h-2 rounded-full bg-brand-soft animate-pulse"></span>
+                    <span class="text-sm font-medium tracking-wide uppercase">Cabinet de Conseil & Stratégie Impact</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-serif font-bold text-white mb-6 leading-[1.1]">
+                    L'ingénierie acoustique<br>
+                    <span class="text-brand-soft italic">au service de vos déchets.</span>
+                </h1>
+                
+                <p class="text-xl text-gray-300 mb-10 max-w-2xl font-light leading-relaxed">
+                    Nous transformons les rebuts industriels de votre chaîne de production en instruments de musique singuliers. Une preuve tangible de votre engagement RSE, façonnée par le design et le son.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-5">
+                    <a href="#contact" class="bg-brand-primary hover:bg-rose-700 text-white text-center font-medium py-4 px-8 rounded-xl transition shadow-lg hover:shadow-brand-primary/30 flex items-center justify-center gap-3">
+                        Auditer vos matériaux <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#produit" class="bg-transparent border border-white/30 text-white hover:bg-white hover:text-brand-dark text-center font-medium py-4 px-8 rounded-xl backdrop-blur-sm transition flex items-center justify-center gap-3">
+                        Voir nos créations
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI / METRICS (Barre intelligente) -->
+        <div class="bg-white border-b border-brand-light relative z-20 shadow-sm">
+            <div class="px-8 md:px-16 lg:px-24 py-10">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-brand-light">
+                    <div class="text-center md:px-4 pt-4 md:pt-0">
+                        <div class="text-4xl font-serif font-bold text-brand-dark mb-1">100<span class="text-brand-primary">%</span></div>
+                        <div class="text-sm text-brand-muted font-medium">Revalorisation Matière</div>
+                    </div>
+                    <div class="text-center md:px-4 pt-4 md:pt-0">
+                        <div class="text-4xl font-serif font-bold text-brand-dark mb-1">04</div>
+                        <div class="text-sm text-brand-muted font-medium">Consultants TCSI</div>
+                    </div>
+                    <div class="text-center md:px-4 pt-4 md:pt-0">
+                        <div class="text-4xl font-serif font-bold text-brand-dark mb-1">01</div>
+                        <div class="text-sm text-brand-muted font-medium">Partenaire Industriel</div>
+                    </div>
+                    <div class="text-center md:px-4 pt-4 md:pt-0">
+                        <div class="text-4xl font-serif font-bold text-brand-dark mb-1"><i class="fas fa-infinity text-3xl"></i></div>
+                        <div class="text-sm text-brand-muted font-medium">Signature Sonore Unique</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2 : NOTRE EXPERTISE (Concept) -->
+        <section id="expertise" class="py-24 px-8 md:px-16 lg:px-24 bg-brand-light/50">
+            <div class="max-w-4xl mb-16">
+                <h2 class="text-sm font-bold text-brand-primary tracking-widest uppercase mb-3">La Méthodologie</h2>
+                <h3 class="text-4xl md:text-5xl font-serif font-bold text-brand-dark leading-tight">Matérialiser votre stratégie environnementale.</h3>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Carte 1 -->
+                <div class="bg-white p-10 rounded-2xl shadow-sm border border-brand-light hover:shadow-xl hover:border-brand-soft transition duration-300 group">
+                    <div class="w-14 h-14 bg-brand-light text-brand-primary rounded-xl flex items-center justify-center text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-search"></i></div>
+                    <h4 class="text-xl font-serif font-bold mb-4 text-brand-dark">1. Audit Matière</h4>
+                    <p class="text-brand-muted leading-relaxed">Analyse de vos rebuts de production (aluminium, polymères, bois). Nous identifions le potentiel acoustique et esthétique de ce que vous considérez comme un déchet.</p>
+                </div>
+                <!-- Carte 2 -->
+                <div class="bg-white p-10 rounded-2xl shadow-sm border border-brand-light hover:shadow-xl hover:border-brand-soft transition duration-300 group">
+                    <div class="w-14 h-14 bg-brand-dark text-brand-light rounded-xl flex items-center justify-center text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-bezier-curve"></i></div>
+                    <h4 class="text-xl font-serif font-bold mb-4 text-brand-dark">2. CAO & Acoustique</h4>
+                    <p class="text-brand-muted leading-relaxed">Nos experts modélisent sur SolidWorks et conçoivent des caisses de résonance sur-mesure pour garantir un instrument non seulement beau, mais parfaitement jouable.</p>
+                </div>
+                <!-- Carte 3 -->
+                <div class="bg-white p-10 rounded-2xl shadow-sm border border-brand-light hover:shadow-xl hover:border-brand-soft transition duration-300 group">
+                    <div class="w-14 h-14 bg-brand-light text-brand-primary rounded-xl flex items-center justify-center text-2xl mb-8 group-hover:scale-110 transition-transform"><i class="fas fa-chart-line"></i></div>
+                    <h4 class="text-xl font-serif font-bold mb-4 text-brand-dark">3. Vecteur de Marque</h4>
+                    <p class="text-brand-muted leading-relaxed">L'instrument final devient le symbole de votre politique RSE. Utilisé lors de salons, offert en cadeau VIP ou exposé, il communique physiquement vos valeurs.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3 : LE PRODUIT (E-commerce / Showcase) -->
+        <section id="produit" class="py-24 px-8 md:px-16 lg:px-24 bg-white">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <!-- Image Produit -->
+                <div class="relative group">
+                    <div class="absolute inset-0 bg-brand-primary rounded-2xl transform rotate-3 scale-105 opacity-10 group-hover:rotate-6 transition duration-500"></div>
+                    <!-- 📸 MODIFIER L'IMAGE ICI : Photo du prototype -->
+                    <img src="https://placehold.co/800x1000/fff1f2/1c1917?text=Visuel+du+Prototype+(SolidWorks/Photo)" alt="Prototype Instrument" class="relative rounded-2xl shadow-2xl w-full object-cover z-10">
+                    
+                    <div class="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl z-20 border border-brand-light max-w-[200px]">
+                        <p class="text-xs text-brand-muted uppercase font-bold mb-1">Série Limitée</p>
+                        <p class="font-serif font-bold text-xl text-brand-dark">Modèle #001</p>
+                    </div>
+                </div>
+                
+                <!-- Info Produit -->
+                <div>
+                    <h2 class="text-sm font-bold text-brand-primary tracking-widest uppercase mb-3">La Boutique</h2>
+                    <h3 class="text-4xl md:text-5xl font-serif font-bold text-brand-dark mb-6">Notre Première Édition</h3>
+                    
+                    <p class="text-brand-muted mb-8 leading-relaxed text-lg">
+                        Conçu intégralement par notre cabinet à partir d'excédents industriels, cet instrument incarne la fusion entre rigueur technique et créativité artistique. Son design brut révèle l'histoire de la matière.
+                    </p>
+
+                    <div class="space-y-4 mb-10">
+                        <div class="flex p-4 bg-brand-light/50 rounded-xl border border-brand-light">
+                            <i class="fas fa-layer-group text-brand-primary mt-1 mr-4"></i>
+                            <div>
+                                <h4 class="font-bold text-brand-dark">Matériaux Hybrides</h4>
+                                <p class="text-sm text-brand-muted">Assemblage de chutes d'aluminium anodisé et de polymères techniques.</p>
+                            </div>
+                        </div>
+                        <div class="flex p-4 bg-brand-light/50 rounded-xl border border-brand-light">
+                            <i class="fas fa-wave-square text-brand-primary mt-1 mr-4"></i>
+                            <div>
+                                <h4 class="font-bold text-brand-dark">Précision Sonore</h4>
+                                <p class="text-sm text-brand-muted">Calculs de résonance optimisés pour une fréquence pure et un timbre clair.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zone Achat -->
+                    <div class="bg-brand-dark p-8 rounded-2xl text-white">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
+                            <div>
+                                <p class="text-brand-soft text-sm font-medium uppercase tracking-wider mb-1">Prix unitaire</p>
+                                <p class="text-4xl font-serif font-bold">250 € <span class="text-xl text-gray-400 font-sans font-normal">HT</span></p>
+                            </div>
+                            <div class="flex flex-col gap-3 w-full sm:w-auto">
+                                <button onclick="alert('Module de paiement e-commerce en cours d\'intégration.')" class="bg-brand-primary hover:bg-rose-600 text-white font-medium py-3 px-8 rounded-xl transition w-full text-center">
+                                    Commander
+                                </button>
+                                <a href="#contact" class="text-brand-soft hover:text-white text-sm text-center underline transition">
+                                    Demander une personnalisation
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4 : LE SPONSOR (FLEXOF) -->
+        <section id="sponsor" class="py-24 px-8 md:px-16 lg:px-24 bg-brand-light">
+            <div class="max-w-4xl mb-16">
+                <h2 class="text-sm font-bold text-brand-primary tracking-widest uppercase mb-3">Étude de Cas / Sponsor</h2>
+                <h3 class="text-4xl md:text-5xl font-serif font-bold text-brand-dark leading-tight">Une synergie industrielle avec <span class="text-brand-primary italic">Flexof</span>.</h3>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <!-- Texte Sponsor -->
+                <div class="lg:col-span-5">
+                    <!-- 📸 MODIFIER L'IMAGE ICI : Logo de Flexof -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-brand-light inline-block mb-8">
+                        <img src="https://placehold.co/300x100/ffffff/1c1917?text=LOGO+FLEXOF" alt="Logo Flexof" class="h-12 object-contain">
+                    </div>
+                    
+                    <p class="text-brand-dark font-medium text-lg mb-6 leading-relaxed">
+                        Implantée à Francheville, Flexof est une entreprise visionnaire qui a compris l'enjeu stratégique de la valorisation des déchets.
+                    </p>
+                    <p class="text-brand-muted mb-8 leading-relaxed">
+                        En devenant notre premier partenaire et fournisseur officiel de matière première, Flexof démontre concrètement sa démarche d'économie circulaire tout en soutenant l'innovation technologique étudiante. Leurs matériaux d'excellence nous ont permis de valider nos premiers calculs acoustiques.
+                    </p>
+                    
+                    <a href="https://www.google.com/search?q=Flexof+Francheville" target="_blank" class="inline-flex items-center text-brand-dark hover:text-brand-primary font-bold transition border-b-2 border-brand-primary pb-1">
+                        Découvrir leur savoir-faire <i class="fas fa-external-link-alt ml-2 text-sm"></i>
+                    </a>
+                </div>
+
+                <!-- Vidéo Sponsor -->
+                <div class="lg:col-span-7">
+                    <div class="bg-brand-dark rounded-3xl overflow-hidden shadow-2xl relative aspect-[16/9] group cursor-pointer border-4 border-white">
+                        <!-- 📸 MODIFIER LA VIDÉO ICI : Remplacer par l'iframe YouTube finale -->
+                        <img src="https://placehold.co/1200x675/1c1917/fff1f2?text=Reportage+Vidéo+Flexof" alt="Vidéo Projet" class="w-full h-full object-cover opacity-70 group-hover:opacity-50 transition duration-500 transform group-hover:scale-105">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                            <div class="w-24 h-24 bg-brand-primary/90 text-white rounded-full flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(225,29,72,0.4)] group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-play ml-2"></i>
+                            </div>
+                            <h4 class="text-white font-serif text-2xl mb-2">Immersion Industrielle</h4>
+                            <p class="text-brand-soft text-sm tracking-wide">Reportage au cœur des ateliers de Francheville</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5 : L'ÉQUIPE TCSI -->
+        <section id="equipe" class="py-24 px-8 md:px-16 lg:px-24 bg-white">
+            <div class="text-center max-w-3xl mx-auto mb-20">
+                <h2 class="text-sm font-bold text-brand-primary tracking-widest uppercase mb-3">Le Cabinet</h2>
+                <h3 class="text-4xl font-serif font-bold text-brand-dark mb-6">Quatre profils. Une vision commune.</h3>
+                <p class="text-brand-muted text-lg">
+                    Issus de la formation <strong class="text-brand-dark">BUT TCSI</strong> de Lyon, nous maîtrisons la double compétence technique et commerciale indispensable pour faire le pont entre le bureau d'études et le marché.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Profil Eva -->
+                <div class="group">
+                    <div class="relative overflow-hidden rounded-2xl mb-6 bg-brand-light aspect-[4/5]">
+                        <!-- 📸 MODIFIER L'IMAGE ICI -->
+                        <img src="https://placehold.co/600x800/e11d48/ffffff?text=Eva" alt="Eva" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
+                            <a href="#" class="text-white hover:text-brand-soft text-xl"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-serif font-bold text-brand-dark">Eva</h4>
+                    <p class="text-brand-primary font-medium text-sm mt-1">Stratégie & Gestion de Projet</p>
+                </div>
+                <!-- Profil Raphaël -->
+                <div class="group">
+                    <div class="relative overflow-hidden rounded-2xl mb-6 bg-brand-light aspect-[4/5] lg:mt-8">
+                        <!-- 📸 MODIFIER L'IMAGE ICI -->
+                        <img src="https://placehold.co/600x800/1c1917/ffffff?text=Raphael" alt="Raphaël" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
+                            <a href="#" class="text-white hover:text-brand-soft text-xl"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-serif font-bold text-brand-dark">Raphaël</h4>
+                    <p class="text-brand-primary font-medium text-sm mt-1">Conception CAO & Acoustique</p>
+                </div>
+                <!-- Profil Lamia -->
+                <div class="group">
+                    <div class="relative overflow-hidden rounded-2xl mb-6 bg-brand-light aspect-[4/5]">
+                        <!-- 📸 MODIFIER L'IMAGE ICI -->
+                        <img src="https://placehold.co/600x800/fda4af/1c1917?text=Lamia" alt="Lamia" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
+                            <a href="#" class="text-white hover:text-brand-soft text-xl"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-serif font-bold text-brand-dark">Lamia</h4>
+                    <p class="text-brand-primary font-medium text-sm mt-1">Design & Direction Artistique</p>
+                </div>
+                <!-- Profil Kayna -->
+                <div class="group">
+                    <div class="relative overflow-hidden rounded-2xl mb-6 bg-brand-light aspect-[4/5] lg:mt-8">
+                        <!-- 📸 MODIFIER L'IMAGE ICI -->
+                        <img src="https://placehold.co/600x800/1c1917/ffffff?text=Kayna" alt="Kayna" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
+                            <a href="#" class="text-white hover:text-brand-soft text-xl"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-serif font-bold text-brand-dark">Kayna</h4>
+                    <p class="text-brand-primary font-medium text-sm mt-1">Prospection & Partenariats B2B</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6 : CONTACT -->
+        <section id="contact" class="py-24 px-8 md:px-16 lg:px-24 bg-brand-dark text-white relative overflow-hidden">
+            <!-- Cercle décoratif -->
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-primary rounded-full blur-[100px] opacity-20"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
+                <div>
+                    <h2 class="text-sm font-bold text-brand-soft tracking-widest uppercase mb-3">Collaboration</h2>
+                    <h3 class="text-4xl md:text-5xl font-serif font-bold mb-6">Écrivons la partition de votre politique RSE.</h3>
+                    <p class="text-gray-400 mb-12 text-lg leading-relaxed">
+                        Que vous souhaitiez fournir vos matériaux industriels (comme Flexof) ou commander des instruments sur-mesure pour votre communication, notre équipe est prête à innover à vos côtés.
+                    </p>
+
+                    <div class="space-y-8">
+                        <a href="mailto:upcyclingmusic@gmail.com" class="flex items-center gap-6 group">
+                            <div class="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-brand-primary transition">
+                                <i class="fas fa-paper-plane text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400 mb-1">Écrivez-nous</p>
+                                <p class="text-xl font-medium font-serif group-hover:text-brand-soft transition">upcyclingmusic@gmail.com</p>
+                            </div>
+                        </a>
+                        <a href="https://instagram.com/music.upcycling" target="_blank" class="flex items-center gap-6 group">
+                            <div class="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-brand-primary transition">
+                                <i class="fab fa-instagram text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400 mb-1">Suivez l'atelier</p>
+                                <p class="text-xl font-medium font-serif group-hover:text-brand-soft transition">@music.upcycling</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Formulaire B2B Minimaliste -->
+                <div class="bg-white p-10 rounded-3xl text-brand-dark shadow-2xl">
+                    <form onsubmit="submitForm(event)" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Société</label>
+                                <input class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg" type="text" placeholder="Nom de l'entreprise" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Email Pro</label>
+                                <input class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg" type="email" placeholder="contact@domaine.com" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Sujet du projet</label>
+                            <select class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg text-brand-dark cursor-pointer">
+                                <option>Devenir sponsor (fourniture de matériaux)</option>
+                                <option>Commande d'instruments sur-mesure</option>
+                                <option>Invitation au Salon TCSI</option>
+                                <option>Autre demande</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-muted uppercase tracking-wider mb-2">Votre message</label>
+                            <textarea class="w-full bg-brand-light/50 border-b-2 border-brand-light px-4 py-3 focus:outline-none focus:border-brand-primary focus:bg-brand-light transition rounded-t-lg h-32 resize-none" placeholder="Décrivez brièvement vos attentes..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-dark hover:bg-brand-primary text-white font-medium py-4 rounded-xl transition shadow-lg mt-4 flex justify-center items-center gap-2">
+                            Envoyer la demande <i class="fas fa-arrow-right text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SCRIPTS (Intelligents) -->
+    <script>
+        // 1. Afficher le Pop-up automatiquement après 2 secondes
+        setTimeout(() => {
+            document.getElementById('promo-popup').classList.remove('hidden');
+        }, 2000);
+
+        function closePopup() {
+            document.getElementById('promo-popup').classList.add('hidden');
+        }
+
+        // 2. Gestion intelligente du menu latéral mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Fermer la sidebar mobile lors du clic sur un lien
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if(window.innerWidth < 1024) { // Uniquement sur mobile/tablette (lg de tailwind)
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // 3. ScrollSpy Intelligent : Mise en évidence de la sidebar selon le scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4 // Déclenche quand 40% de la section est visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        // Retire la classe active de tous les liens
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        // Ajoute la classe active au lien correspondant
+                        const activeLink = document.querySelector(`.nav-link[href="#${id}"]`);
+                        if(activeLink) activeLink.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+
+        // 4. Gestion du formulaire B2B
+        function submitForm(event) {
+            event.preventDefault();
+            alert("Excellente initiative ! Votre demande B2B a bien été transmise au cabinet Upcycling Music. Nous vous contacterons sous 48h.");
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>        .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .hero-bg {
             /* 📸 MODIFIER L'IMAGE DE FOND ICI : Remplacez l'URL par votre image d'ambiance industrielle/musicale */
